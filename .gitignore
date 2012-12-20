@@ -15,6 +15,9 @@ RemoteSystemsTempFiles
 bin
 org.eclipse.jdt.core.prefs
 
+# STS
+.springBeans
+
 # Maven
 target
 
