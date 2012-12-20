@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.2.xsd
+		http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-2.2.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.1.xsd">
+
+
+	<int-stream:stdin-channel-adapter channel="message-kirim">
+		<int:poller fixed-delay="1000" max-messages-per-poll="1" />
+	</int-stream:stdin-channel-adapter>
+	<int:channel id="message-kirim" />
+	<int-amqp:outbound-channel-adapter 
+		channel="message-kirim" 
+		amqp-template="amqpTemplate" 
+		exchange-name="belajar.exchange"
+		routing-key="belajar.routing.key"
+	/>
+	
+	<!-- rabbitmq -->
+	<rabbit:connection-factory id="connectionFactory" />
+	<rabbit:template id="amqpTemplate" connection-factory="connectionFactory" />
+	<rabbit:admin connection-factory="connectionFactory" />
+	<rabbit:queue name="belajar.halo" />
+	<rabbit:direct-exchange name="belajar.exchange">
+		<rabbit:bindings>
+			<rabbit:binding queue="belajar.halo" key="belajar.routing.key" />
+		</rabbit:bindings>
+	</rabbit:direct-exchange>
+</beans>
