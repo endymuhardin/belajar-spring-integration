@@ -17,9 +17,12 @@
     <context:component-scan base-package="com.muhardin.endy.belajar.spring.integration" />
 
     <!-- message flow -->
-	<int-stream:stdin-channel-adapter channel="rabbit-channel-input">
-        <int:poller fixed-delay="10" max-messages-per-poll="1" />
-	</int-stream:stdin-channel-adapter>
+	<int:gateway id="gatewayDemo"
+        service-interface="com.muhardin.endy.belajar.spring.integration.GatewayDemo"
+        default-request-channel="rabbit-channel-input"
+        default-reply-channel="rabbit-channel-output"
+    />
+
     <int-amqp:channel id="rabbit-channel-input" />
     <int:service-activator
         input-channel="rabbit-channel-input"

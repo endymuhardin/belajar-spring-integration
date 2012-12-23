@@ -10,5 +10,8 @@ public class RabbitChannel {
 		AbstractApplicationContext ctx 
 		= new ClassPathXmlApplicationContext("classpath:rabbit-channel.xml");
 		ctx.registerShutdownHook();
-	}
+
+        GatewayDemo gw = ctx.getBean(GatewayDemo.class);
+        gw.kirim("Test kirim pesan");
+    }
 }
