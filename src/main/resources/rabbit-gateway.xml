@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+       xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.2.xsd
+		http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-2.2.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.1.xsd">
+
+    <!-- business service -->
+    <context:component-scan base-package="com.muhardin.endy.belajar.spring.integration" />
+
+    <!-- message flow -->
+    <int:gateway id="gatewayDemo"
+         service-interface="com.muhardin.endy.belajar.spring.integration.GatewayDemo"
+         default-request-channel="gatewayRequest"
+         default-reply-channel="gatewayResponse"
+    />
+    <int:channel id="gatewayRequest" />
+    <int:channel id="gatewayResponse" />
+    <int-amqp:outbound-gateway
+            amqp-template="amqpTemplate"
+            request-channel="gatewayRequest"
+            reply-channel="gatewayResponse"
+            exchange-name="belajar.exchange"
+            routing-key="belajar.gateway"
+    />
+
+    <int-amqp:inbound-gateway
+        request-channel="serviceRequest"
+        reply-channel="serviceResponse"
+        queue-names="belajar.gateway"
+    />
+
+    <int:channel id="serviceRequest" />
+    <int:channel id="serviceResponse" />
+
+    <int:service-activator
+        input-channel="serviceRequest"
+        output-channel="serviceResponse"
+        ref="serviceDemo"
+        method="halo"
+    />
+
+    <!-- rabbitmq -->
+    <rabbit:connection-factory id="rabbitConnectionFactory" />
+    <rabbit:template id="amqpTemplate" connection-factory="rabbitConnectionFactory"/>
+    <rabbit:admin connection-factory="rabbitConnectionFactory"/>
+    <rabbit:queue name="belajar.gateway" />
+    <rabbit:direct-exchange name="belajar.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="belajar.gateway" key="belajar.gateway" />
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+</beans>

@@ -32,7 +32,7 @@
     />
     <int-amqp:channel id="rabbit-channel-output" />
 	<int-stream:stdout-channel-adapter channel="rabbit-channel-output" append-newline="true"/>
-	
+
 	<!-- rabbitmq -->
 	<rabbit:connection-factory id="rabbitConnectionFactory" />
 </beans>
