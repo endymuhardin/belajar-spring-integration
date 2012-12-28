@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip-2.2.xsd">
+
+    <!-- message flow -->
+    <int:gateway id="gatewayDemo"
+                 service-interface="com.muhardin.endy.belajar.spring.integration.GatewayDemo"
+                 default-request-channel="tcpInput"
+                 default-reply-channel="tcpOutput"
+            />
+
+    <bean id="tcpSerializer"
+          class="com.muhardin.endy.belajar.spring.integration.tcp.serializer.PrefixLengthSerializer"/>
+
+    <int-ip:tcp-connection-factory
+        id="tcpConnectionFactory"
+        type="client"
+        host="localhost"
+        port="11111"
+        serializer="tcpSerializer"
+        deserializer="tcpSerializer"
+    />
+
+    <int-ip:tcp-outbound-gateway
+        request-channel="tcpInput"
+        reply-channel="tcpOutput"
+        connection-factory="tcpConnectionFactory"
+    />
+
+    <int:channel id="tcpInput"/>
+    <int:channel id="tcpOutput"/>
+
+
+</beans>
